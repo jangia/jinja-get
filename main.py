@@ -39,6 +39,19 @@ class BlogHandler(BaseHandler):
     def get(self):
         return self.render_template('blog.html')
 
+    def post(self):
+        # self.neki()
+        return self.response.write('Post Details of ninja!')
+
+    def put(self):
+        return self.response.write('Put Details of ninja!')
+
+    def neki(self):
+        return self.response.write('Neki Details of ninja!')
+
+    def delete(self):
+        return self.response.write('delete Details of ninja!')
+
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler),
     webapp2.Route('/blog', BlogHandler),
