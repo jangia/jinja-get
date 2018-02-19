@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>SmartNinja basic Jinja template</title>
+
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+<h1>Hello, SmartNinja!</h1>
+{% if sporocilo %}
+    <p>Handler nam je sporočil naslednje: {{sporocilo}}</p>
+{% else %}
+    <p>Od Handlerja nismo prejeli nobenega sporočila :( </p>
+{% endif %}
+</body>
+</html>
