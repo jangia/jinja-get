@@ -2,6 +2,8 @@
 import os
 import jinja2
 import webapp2
+from models import Sporocilo
+import time
 
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
@@ -33,6 +35,73 @@ class MainHandler(BaseHandler):
 
         return self.render_template("hello.html", params=params)
 
+    def post(self):
+        dodatno = "Uporabnik je vpisal: "
+        rezultat = self.request.get("vnos")
+
+        sporocilo = Sporocilo(vnos=rezultat)
+        sporocilo.put()
+
+        skupaj = dodatno + rezultat
+        params = {'skupaj': skupaj}
+        return self.render_template("hello.html", params=params)
+
+class SeznamSporocilHandler(BaseHandler):
+    def get(self):
+        seznam = Sporocilo.query(Sporocilo.izbrisan == False).fetch()
+        params = {"seznam": seznam}
+
+        return self.render_template("seznam_sporocil.html", params=params)
+
+
+class PosameznoSporociloHandler(BaseHandler):
+    def get(self, sporocilo_id):
+        sporocilo = Sporocilo.get_by_id(int(sporocilo_id))
+        params = {"sporocilo": sporocilo}
+        return self.render_template("posamezno_sporocilo.html", params=params)
+
+
+class RezultatHandler(BaseHandler):
+    def post(self):
+        dodatno = "Uporabnik je vpisal: "
+        rezultat = self.request.get("vnos")
+        skupaj = dodatno + rezultat
+        return self.write(skupaj)
+
+
+class ProjektiHandler(BaseHandler):
+
+    def get(self):
+        self.render_template('projekti.html')
+
+
+class UrediSporociloHandler(BaseHandler):
+    def get(self, sporocilo_id):
+        sporocilo = Sporocilo.get_by_id(int(sporocilo_id))
+        params = {"sporocilo": sporocilo}
+        return self.render_template("uredi_sporocilo.html", params=params)
+
+    def post(self, sporocilo_id):
+        vnos = self.request.get("vnos")
+        sporocilo = Sporocilo.get_by_id(int(sporocilo_id))
+        sporocilo.vnos = vnos
+        sporocilo.put()
+        time.sleep(0.1)
+        return self.redirect_to("seznam-sporocil")
+
+class IzbrisiSporociloHandler(BaseHandler):
+    def get(self, sporocilo_id):
+        sporocilo = Sporocilo.get_by_id(int(sporocilo_id))
+        params = {"sporocilo": sporocilo}
+        return self.render_template("izbrisi_sporocilo.html", params=params)
+
+    def post(self, sporocilo_id):
+        sporocilo = Sporocilo.get_by_id(int(sporocilo_id))
+        # sporocilo.key.delete()
+        sporocilo.izbrisan = True
+        sporocilo.put()
+        time.sleep(0.1)
+        return self.redirect_to("seznam-sporocil")
 
 class BlogHandler(BaseHandler):
 
@@ -55,4 +124,10 @@ class BlogHandler(BaseHandler):
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler),
     webapp2.Route('/blog', BlogHandler),
+    webapp2.Route('/rezultat', RezultatHandler),
+    webapp2.Route('/projekti', ProjektiHandler),
+    webapp2.Route('/seznam-sporocil', SeznamSporocilHandler, name="seznam-sporocil"),
+    webapp2.Route('/sporocilo/<sporocilo_id:\d+>', PosameznoSporociloHandler),
+    webapp2.Route('/sporocilo/<sporocilo_id:\d+>/uredi', UrediSporociloHandler),
+    webapp2.Route('/sporocilo/<sporocilo_id:\d+>/izbrisi', IzbrisiSporociloHandler),
 ], debug=True)

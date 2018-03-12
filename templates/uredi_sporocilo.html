@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Uredi sporocilo</title>
+</head>
+<body>
+    <form action="/sporocilo/{{ sporocilo.key.id() }}/uredi" method="post">
+            <input name="vnos" value="{{ sporocilo.vnos }}">
+
+            <button type="submit">OK</button>
+    </form>
+</body>
+</html>
